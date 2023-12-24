@@ -11,14 +11,18 @@ public class Main {
 
             WordMap wordMap = new WordMap();
 
+            ArrayList<MapEntry<String, Integer>> totalWords = new ArrayList<>();
+
             File folder = new File("src/dataset");
             File[] listOfFiles = folder.listFiles();
+            // sort files in alphabetical order to ensure later on that totalWords matches with the correct file
+            // e.g. totalWords.get(0) == firstfileWords.length (first => alphabetically comes first)
+            Arrays.sort(listOfFiles);
             for (File file : listOfFiles)
             {
                 if(file.isFile())
                 {
-                    BufferedReader br=new BufferedReader(new FileReader(new
-                            File("src/dataset"+"/"+file.getName())));
+                    BufferedReader br=new BufferedReader(new FileReader(new File("src/dataset"+"/"+file.getName())));
                     StringBuffer word=new StringBuffer();
                     String line;
                     while((line=br.readLine())!=null)
@@ -51,7 +55,7 @@ public class Main {
                     String[] words = str.split("\\s+");
                     //System.out.println(Arrays.toString(words));
 
-
+                    totalWords.add(new MapEntry<>(file.getName(), words.length));//number of words per document, in alphabetical order
                     // Building the wordmap
                     for ( int index = 0; index < words.length; index++){
                         //System.out.println(index);
@@ -66,6 +70,7 @@ public class Main {
                     }
                 }
             }
+            System.out.println(totalWords.toString());
             System.out.println("-----------------------------------");
             //Printing out all entries of the wordmap (and for each word its corresponding filemap)
             for (Map.Entry entry: wordMap.entrySet2()) {
@@ -90,19 +95,28 @@ public class Main {
                     List<String> list = Arrays.asList(arr);
                     LinkedList<String> queryWordsList = new LinkedList<>(list);
 
+                    // TYPE 2 QUERY : Retrieving most relevant document
                     if (arr[0].equals("search")){
                         queryWordsList.removeFirst();
                         System.out.println(queryWordsList+" TF-IDT");
+                        ArrayList<String> searchQuery = correctQuery(queryWordsList, wordMap);
+                        System.out.println(searchQuery.toString());
+
+                        TFIDF search = new TFIDF(searchQuery, wordMap, totalWords);
+                        System.out.println(search.TF("planet").toString());
+                        System.out.println(search.IDF("planet"));
+
+
+
+
+                        // TYPE 1 QUERY : Finding most probable Bigram of word
                     }else{
-                        //TODO
                         String bigramoOf = queryWordsList.getLast();
                         queryWordsList.clear(); queryWordsList.add(bigramoOf);
                         System.out.println(queryWordsList+" Bigram");
-
+                        ArrayList<String> bigramQuery = correctQuery(queryWordsList, wordMap);
+                        System.out.println(bigramQuery.toString());
                     }
-                    // Queries are now corrected and ready to be manipulated
-                    ArrayList<String> correctQuery = correctQuery(queryWordsList, wordMap);
-                    System.out.println(correctQuery.toString());
                 }
 
                 reader.close(); // fin lecture fichier
