@@ -105,10 +105,7 @@ public class WordMap implements Map<String, FileMap> {
     }
 
     @Override
-    public void clear() {
-
-    }
-
+    public void clear() {}
     @Override
     public Set<String> keySet() {
         return null;

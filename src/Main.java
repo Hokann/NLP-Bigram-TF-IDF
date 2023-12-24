@@ -4,6 +4,8 @@ import edu.stanford.nlp.pipeline.*;
 import java.io.*;
 import java.util.*;
 
+import static edu.stanford.nlp.util.StringUtils.editDistance;
+
 public class Main {
         public static void main(String[] args) throws IOException {
 
@@ -45,31 +47,27 @@ public class Main {
                     }
                     String str=String.valueOf(word);
                     str=str.replaceAll("[^a-zA-Z0-9]"," ").replaceAll("\\s+"," ").trim();
-                    System.out.println(str);
-
+                    //System.out.println(str);
                     String[] words = str.split("\\s+");
-                    System.out.println(Arrays.toString(words));
+                    //System.out.println(Arrays.toString(words));
 
+
+                    // Building the wordmap
                     for ( int index = 0; index < words.length; index++){
-                        System.out.println(index);
+                        //System.out.println(index);
                         ArrayList i = new ArrayList(1); i.add(index);
 
                         if (wordMap.get(words[index]) == null){
-                            System.out.println("new word");
                             FileMap fileMap = new FileMap();
                             fileMap.put(file.getName(), i);
-                            System.out.println("filemap for word success");
                             wordMap.put(words[index], fileMap);
-                            System.out.println("wordmap entry for word success");
                         }
-                        else{
-                        wordMap.get(words[index]).put(file.getName(), i);
-                    }
+                        else{ wordMap.get(words[index]).put(file.getName(), i); }
                     }
                 }
             }
-
-            //START
+            System.out.println("-----------------------------------");
+            //Printing out all entries of the wordmap (and for each word its corresponding filemap)
             for (Map.Entry entry: wordMap.entrySet2()) {
                 String word = (String) entry.getKey();
                 System.out.println(word+" : ");
@@ -79,9 +77,55 @@ public class Main {
                     ArrayList<Integer> positions = (ArrayList<Integer>) entry2.getValue();
                     System.out.println(" - "+filename + " : "+positions.toString());
                 }
-
             }
+            System.out.println("-----------------------------------");
 
+            try {
+                File queryFile = new File("src/query.txt");
+                Scanner reader = new Scanner(queryFile);
+                while (reader.hasNextLine()) {
+                    String query = reader.nextLine();
 
+                    String[] arr = query.split("\\s+");
+                    List<String> list = Arrays.asList(arr);
+                    LinkedList<String> queryWordsList = new LinkedList<>(list);
+
+                    if (arr[0].equals("search")){
+                        queryWordsList.removeFirst();
+                        System.out.println(queryWordsList+" TF-IDT");
+                    }else{
+                        //TODO
+                        String bigramoOf = queryWordsList.getLast();
+                        queryWordsList.clear(); queryWordsList.add(bigramoOf);
+                        System.out.println(queryWordsList+" Bigram");
+
+                    }
+                    // Queries are now corrected and ready to be manipulated
+                    ArrayList<String> correctQuery = correctQuery(queryWordsList, wordMap);
+                    System.out.println(correctQuery.toString());
+                }
+
+                reader.close(); // fin lecture fichier
+            } catch (FileNotFoundException e) {
+                System.out.println("Erreur : fichier non trouvé");
+                e.printStackTrace();
+            }
+    }
+    public static ArrayList<String> correctQuery(List<String> typos, WordMap map){
+            ArrayList<String> correctedQuery = new ArrayList<>();
+        for (String typo : typos){
+            String correctedWord = typo;
+            int minDistance = typo.length();
+            for (Map.Entry<String, FileMap> e : map.entrySet2()){
+                String word = e.getKey();
+                int LevenshteinDistance = editDistance(typo, word);
+                if (LevenshteinDistance < minDistance){
+                    minDistance = LevenshteinDistance;
+                    correctedWord = word;
+                }
+            }
+            correctedQuery.add(correctedWord);
+        }
+        return correctedQuery;
     }
 }
