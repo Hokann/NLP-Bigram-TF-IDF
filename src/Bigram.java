@@ -30,15 +30,12 @@ public class Bigram {
             }
         }
         return bestBigram;
-
-
-
     }
 
     public ArrayList<MapEntry<String, Double>> coOccurrences(String w1) {
         ArrayList<MapEntry<String, ArrayList<Integer>>> w1Positions = new ArrayList<>();
         ArrayList<MapEntry<String, Double>> coOccurrenceList = new ArrayList<>();
-        // C(w1) all the counts of w1 within all documents
+        // C(w1), all the counts of w1 within all documents
         double CW1 = 0.0;
         FileMap w1FileMap = wordMap.get(w1);
         for (Map.Entry<String, ArrayList<Integer>> entry : w1FileMap.entrySet2()) {
@@ -50,7 +47,7 @@ public class Bigram {
                 Integer bigramPos = position + 1;
                 //System.out.println("bigram pos = " + bigramPos + " in file = " + documentName);
                 String bigramWord = getWord1(documentName, bigramPos);
-                if (bigramWord == null) { System.out.println("FF"); break; }
+                if (bigramWord == null) {  break; }
                 //MapEntry<String, Integer> mapEntry = new MapEntry<>(bigramWord, 1);
                 // Check if the bigram is already in coOccurrenceList
                 boolean found = false;
@@ -79,10 +76,10 @@ public class Bigram {
                 ArrayList<Integer> entryIntList = entryFileMap.get(documentName);
 
                 // Check if bigramPos is within the range of positions
-                if (!entryIntList.isEmpty() && bigramPos >= entryIntList.get(0) && bigramPos <= entryIntList.get(entryIntList.size() - 1)) {
+               // if (!entryIntList.isEmpty() && bigramPos >= entryIntList.get(0) && bigramPos <= entryIntList.get(entryIntList.size() - 1)) {
                     // Iterate through positions to find the word at the specified position
                     for (int i = 0; i < entryIntList.size(); i++) {
-                        if (entryIntList.get(i) == bigramPos) {
+                        if (entryIntList.get(i).equals(bigramPos)) {
                             //System.out.println("TRUE : " + entry.getKey());
                             return entry.getKey();
                         } else if (entryIntList.get(i) > bigramPos) {
@@ -90,10 +87,9 @@ public class Bigram {
                             break;
                         }
                     }
-                }
+                //}
             }
         }
-        System.out.println("F");
         return null; // Return null if the word is not found
     }
 

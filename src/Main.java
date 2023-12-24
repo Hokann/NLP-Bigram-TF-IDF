@@ -9,11 +9,14 @@ import static edu.stanford.nlp.util.StringUtils.editDistance;
 public class Main {
         public static void main(String[] args) throws IOException {
 
+            String dataset = "src/dataset2";
+            String query = "src/query2.txt";
+
             WordMap wordMap = new WordMap();
 
             ArrayList<MapEntry<String, Integer>> totalWords = new ArrayList<>();
 
-            File folder = new File("src/dataset2");
+            File folder = new File(dataset);
             File[] listOfFiles = folder.listFiles();
             // sort files in alphabetical order to ensure later on that totalWords matches with the correct file
             // e.g. totalWords.get(0) == firstfileWords.length (first => alphabetically comes first)
@@ -22,7 +25,7 @@ public class Main {
             {
                 if(file.isFile())
                 {
-                    BufferedReader br=new BufferedReader(new FileReader(new File("src/dataset2"+"/"+file.getName())));
+                    BufferedReader br=new BufferedReader(new FileReader(new File(dataset+"/"+file.getName())));
                     StringBuffer word=new StringBuffer();
                     String line;
                     while((line=br.readLine())!=null)
@@ -51,16 +54,13 @@ public class Main {
                     }
                     String str=String.valueOf(word);
                     str=str.replaceAll("[^a-zA-Z0-9]"," ").replaceAll("\\s+"," ").trim();
-                    //System.out.println(str);
                     String[] words = str.split("\\s+");
-                    //System.out.println(Arrays.toString(words));
 
                     totalWords.add(new MapEntry<>(file.getName(), words.length));//number of words per document, in alphabetical order
-                    // Building the wordmap
-                    for ( int index = 0; index < words.length; index++){
-                        //System.out.println(index);
-                        ArrayList i = new ArrayList(1); i.add(index);
 
+                    // Building the wordMap
+                    for ( int index = 0; index < words.length; index++){
+                        ArrayList<Integer> i = new ArrayList<>(1); i.add(index);
                         if (wordMap.get(words[index]) == null){
                             FileMap fileMap = new FileMap();
                             fileMap.put(file.getName(), i);
@@ -72,16 +72,16 @@ public class Main {
             }
 
             try {
-                File queryFile = new File("src/query2.txt");
+                File queryFile = new File(query);
                 Scanner reader = new Scanner(queryFile);
 
                 File outputFile = new File("src/solutions.txt");
                 BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
 
                 while (reader.hasNextLine()) {
-                    String query = reader.nextLine();
+                    String queryline = reader.nextLine();
 
-                    String[] arr = query.split("\\s+");
+                    String[] arr = queryline.split("\\s+");
                     List<String> list = Arrays.asList(arr);
                     LinkedList<String> queryWordsList = new LinkedList<>(list);
 
@@ -118,7 +118,6 @@ public class Main {
                         //System.out.println(bigramQuery.toString());
                         String word = bigramQuery.getLast();
                         Bigram bigram = new Bigram(word, wordMap);
-                        System.out.println(word);
                         String mostProbableBigram = bigram.bigramOf(word);
                         System.out.println(word + " " + mostProbableBigram);
                         writer.write(word + " " + mostProbableBigram+"\n");
