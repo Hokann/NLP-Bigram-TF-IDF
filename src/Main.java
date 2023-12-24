@@ -2,10 +2,12 @@ import edu.stanford.nlp.ling.*;
 import edu.stanford.nlp.pipeline.*;
 
 import java.io.*;
-import java.util.Properties;
+import java.util.*;
 
 public class Main {
         public static void main(String[] args) throws IOException {
+
+            WordMap wordMap = new WordMap();
 
             File folder = new File("src/dataset");
             File[] listOfFiles = folder.listFiles();
@@ -44,10 +46,41 @@ public class Main {
                     String str=String.valueOf(word);
                     str=str.replaceAll("[^a-zA-Z0-9]"," ").replaceAll("\\s+"," ").trim();
                     System.out.println(str);
+
+                    String[] words = str.split("\\s+");
+                    System.out.println(Arrays.toString(words));
+
+                    for ( int index = 0; index < words.length; index++){
+                        System.out.println(index);
+                        ArrayList i = new ArrayList(1); i.add(index);
+
+                        if (wordMap.get(words[index]) == null){
+                            System.out.println("new word");
+                            FileMap fileMap = new FileMap();
+                            fileMap.put(file.getName(), i);
+                            System.out.println("filemap for word success");
+                            wordMap.put(words[index], fileMap);
+                            System.out.println("wordmap entry for word success");
+                        }
+                        else{
+                        wordMap.get(words[index]).put(file.getName(), i);
+                    }
+                    }
                 }
             }
 
             //START
+            for (Map.Entry entry: wordMap.entrySet2()) {
+                String word = (String) entry.getKey();
+                System.out.println(word+" : ");
+                FileMap wordFileMap = (FileMap) entry.getValue();
+                for (Map.Entry entry2: wordFileMap.entrySet2()){
+                    String filename = (String) entry2.getKey();
+                    ArrayList<Integer> positions = (ArrayList<Integer>) entry2.getValue();
+                    System.out.println(" - "+filename + " : "+positions.toString());
+                }
+
+            }
 
 
     }

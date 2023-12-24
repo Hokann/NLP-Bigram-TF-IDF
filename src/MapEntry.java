@@ -12,11 +12,13 @@ public class MapEntry<K, V> implements Map.Entry<K, V> {
         public V getValue() { return this.v; }
         // developer's utilities
         protected void setKey( K key ) { this.k = key; }
-        public V setValue(V value) {
+        public V setValue(V value) { //replace current value with new value
             V old = v;
             this.v = value;
             return old;
         }
+
+
         public String toString() { return "<" + this.getKey() + ":" + this.getValue() + ">"; }
 }
 

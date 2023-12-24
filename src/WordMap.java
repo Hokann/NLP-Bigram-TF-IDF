@@ -13,6 +13,12 @@ public class WordMap implements Map<String, FileMap> {
     private int capacity;
     private int n;
 
+    private int prime = 109345121;
+    Random rand = new Random();
+	double scale = rand.nextInt( prime - 1 ) + 1;
+	int shift = rand.nextInt( prime );
+
+
     public WordMap(){ // default constructor
        this.capacity = 16;
        this.n = 0;
@@ -34,12 +40,13 @@ public class WordMap implements Map<String, FileMap> {
     }
 
     @Override
-    public FileMap put(String word, FileMap file) {
+    public FileMap put(String word, FileMap fileMap) {
 
-        MapEntry<String, FileMap> wordEntry = new MapEntry<>(word, file);
-        int j = findSlot( word.hashCode(), word );
-        if( j >= 0 ) // TODO : if the word already exists in a file, we need to update the reference
-            return file; //table[j].setValue( file ); // associate word to new file
+        MapEntry<String, FileMap> wordEntry = new MapEntry<>(word, fileMap);
+        int j = findSlot( hashValue(word), word );
+        if( j >= 0 ){ // TODO : if the word already exists in a file, just return the existing fileMap
+            return fileMap; //table[j].setValue( file ); // associate word to new file
+        }
         table[-(j+1)] = wordEntry; // convert to proper index
         this.n++;
 
@@ -52,15 +59,27 @@ public class WordMap implements Map<String, FileMap> {
 
     public void resize(int newCap){
         ArrayList<Entry<String,FileMap>> buffer = new ArrayList<>();
-        for( Entry<String,FileMap> e : this.entrySet() )
+        for( Entry<String,FileMap> e : this.entrySet2() ){
             buffer.add( e );
+        }
         this.capacity = newCap;
         this.table = new MapEntry[this.capacity];
         this.n = 0; // wil be recomputed while reinserting entries
-        for( Entry<String,FileMap> e : buffer )
-            put( e.getKey(), e.getValue() );
+        for( Entry<String,FileMap> e : buffer ){
+            put( e.getKey(), e.getValue() );}
     }
 
+    private int hashValue( String key ) {
+        return (int)( ( Math.abs( key.hashCode() * scale + shift ) % prime ) % capacity );
+    }
+
+    @Override
+    public FileMap get(Object key) {
+        String word = key.toString();
+        int j = findSlot( hashValue(word), word );
+        if( j < 0 ) return null; // no match found
+        return table[j].getValue();
+    }
     @Override
     public int size() { return n; }
     @Override
@@ -75,14 +94,6 @@ public class WordMap implements Map<String, FileMap> {
     public boolean containsValue(Object value) {
         return false;
     }
-
-    @Override
-    public FileMap get(Object key) {
-        return null;
-    }
-
-
-
     @Override
     public FileMap remove(Object key) {
         return null;
@@ -110,6 +121,20 @@ public class WordMap implements Map<String, FileMap> {
 
     @Override
     public Set<Entry<String, FileMap>> entrySet() {
-        return null;
+        Set<Entry<String, FileMap>> set = new HashSet<>();
+
+        for (MapEntry<String, FileMap> entryList : table) {
+            set.addAll((Collection<? extends Entry<String, FileMap>>) entryList);
+        }
+        return set;
     }
+
+// return an iterable collection of all key-value entries of the map
+public Iterable<Entry<String,FileMap>> entrySet2() {
+    ArrayList<Entry<String,FileMap>> buffer = new ArrayList<>();
+    for( int h = 0; h < this.capacity; h++ )
+        if( !isAvailable( h ) ) buffer.add( table[h] );
+    return buffer;
+}
+
 }
