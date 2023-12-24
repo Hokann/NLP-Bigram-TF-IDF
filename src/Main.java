@@ -88,6 +88,10 @@ public class Main {
             try {
                 File queryFile = new File("src/query.txt");
                 Scanner reader = new Scanner(queryFile);
+
+                File outputFile = new File("src/solutions.txt");
+                BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+
                 while (reader.hasNextLine()) {
                     String query = reader.nextLine();
 
@@ -112,8 +116,11 @@ public class Main {
                             }
                         }
                         MapEntry<String, Integer> documentEntry = totalWords.get(searchResults.indexOf(highestTFIDF));
+
                         String mostRelevantDocument = documentEntry.getKey();
                         System.out.println(mostRelevantDocument);
+                        writer.write(mostRelevantDocument+"\n");
+
 
 
 
@@ -122,17 +129,21 @@ public class Main {
                     }else{
                         String bigramoOf = queryWordsList.getLast();
                         queryWordsList.clear(); queryWordsList.add(bigramoOf);
-                        System.out.println(queryWordsList+" Bigram");
+                        //System.out.println(queryWordsList+" Bigram");
                         ArrayList<String> bigramQuery = correctQuery(queryWordsList, wordMap);
-                        System.out.println(bigramQuery.toString());
-                        Bigram bigram = new Bigram(bigramQuery.getLast(), wordMap);
+                        //System.out.println(bigramQuery.toString());
+                        String word = bigramQuery.getLast();
+                        Bigram bigram = new Bigram(word, wordMap);
 
-                        String mostProbableBigram = bigram.bigramOf("coffee");
+                        String mostProbableBigram = bigram.bigramOf(word);
                         System.out.println(mostProbableBigram);
+                        writer.write(word + " " + mostProbableBigram+"\n");
+
                     }
                 }
 
                 reader.close(); // fin lecture fichier
+                writer.close();
             } catch (FileNotFoundException e) {
                 System.out.println("Erreur : fichier non trouvé");
                 e.printStackTrace();

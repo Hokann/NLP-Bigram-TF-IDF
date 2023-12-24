@@ -47,7 +47,7 @@ public class Bigram {
 
             for (Integer position : documentPositions) { // position of each w1
                 Integer bigramPos = position + 1;
-                System.out.println("bigram pos = " + bigramPos + " in file = " + documentName);
+                //System.out.println("bigram pos = " + bigramPos + " in file = " + documentName);
                 String bigramWord = getWord1(documentName, bigramPos);
 
                 //MapEntry<String, Integer> mapEntry = new MapEntry<>(bigramWord, 1);
@@ -82,7 +82,7 @@ public class Bigram {
                     // Iterate through positions to find the word at the specified position
                     for (int i = 0; i < entryIntList.size(); i++) {
                         if (entryIntList.get(i) == bigramPos) {
-                            System.out.println("TRUE : " + entry.getKey());
+                            //System.out.println("TRUE : " + entry.getKey());
                             return entry.getKey();
                         } else if (entryIntList.get(i) > bigramPos) {
                             // If the current position is greater than bigramPos, break the loop
