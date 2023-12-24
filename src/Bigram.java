@@ -13,7 +13,7 @@ public class Bigram {
         this.wordMap = wordMap;
     }
 
-    // Main method which will compute probability of obsering w1 for all possible bigrams, then choosing the bigram
+    // Main method which will compute the probability of observing w1 for all possible bigrams, then choosing the bigram
     // with the highest probability
     public String bigramOf(String w1){
         ArrayList<MapEntry<String, Double>> possibleBigrams = coOccurrences(w1); // list of possible bigrams
@@ -23,7 +23,7 @@ public class Bigram {
             bigram.setValue(bigram.getValue() / countW1); // calculate probability of observing w1 for each bigram
         }
 
-        // Find the bigram with the highest probability, if we find 2 bigrams with the highest probability, we take
+        // Find the bigram with the highest probability, if we find 2 bigrams with the same probabilities, we take
         // the smallest in lexicographic order
         double bestProba = 0.0; String bestBigram = ""; // init
         for (MapEntry<String, Double> bigram : possibleBigrams){

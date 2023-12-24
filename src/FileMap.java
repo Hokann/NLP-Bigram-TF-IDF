@@ -64,7 +64,7 @@ public class FileMap implements Map<String, ArrayList<Integer>> {
         }
         this.capacity = newCap;
         this.table = new MapEntry[this.capacity];
-        this.n = 0; // wil be recomputed while reinserting entries
+        this.n = 0; // will be recomputed while reinserting entries
         for( Entry<String,ArrayList<Integer>> e : buffer ){
             put( e.getKey(), e.getValue() );}
     }

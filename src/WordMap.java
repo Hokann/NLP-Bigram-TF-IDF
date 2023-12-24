@@ -73,7 +73,7 @@ public class WordMap implements Map<String, FileMap> {
         }
         this.capacity = newCap;
         this.table = new MapEntry[this.capacity];
-        this.n = 0; // wil be recomputed while reinserting entries
+        this.n = 0; // will be recomputed while reinserting entries
         for( Entry<String,FileMap> e : buffer ){
             put( e.getKey(), e.getValue() );}
     }
@@ -102,12 +102,10 @@ public class WordMap implements Map<String, FileMap> {
     public int size() { return n; }
     @Override
     public boolean isEmpty() { return n == 0; }
-
     @Override
     public boolean containsKey(Object key) {
         return false;
     }
-
     @Override
     public boolean containsValue(Object value) {
         return false;
@@ -116,33 +114,22 @@ public class WordMap implements Map<String, FileMap> {
     public FileMap remove(Object key) {
         return null;
     }
-
     @Override
     public void putAll(Map<? extends String, ? extends FileMap> m) {
 
     }
-
     @Override
     public void clear() {}
     @Override
     public Set<String> keySet() {
         return null;
     }
-
     @Override
     public Collection<FileMap> values() {
         return null;
     }
-
     @Override
     public Set<Entry<String, FileMap>> entrySet() {
-        Set<Entry<String, FileMap>> set = new HashSet<>();
-
-        for (MapEntry<String, FileMap> entryList : table) {
-            set.addAll((Collection<? extends Entry<String, FileMap>>) entryList);
-        }
-        return set;
+        return null;
     }
-
-
 }

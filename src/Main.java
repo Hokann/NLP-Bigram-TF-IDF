@@ -21,7 +21,7 @@ public class Main {
         public static void main(String[] args) throws IOException {
 
             // Starting INPUTS
-            String dataset = "src/dataset";
+            String dataset = "src/dataset"; // simple example dataset, see dataset2 and query2 for a larger dataset (also longer processing time)
             String query = "src/query.txt";
 
             WordMap wordMap = new WordMap(); // implementation of Map, specifically for words
@@ -91,7 +91,7 @@ public class Main {
                 File outputFile = new File("src/solutions.txt");
                 BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
 
-                while (reader.hasNextLine()) { // each line of query.txt is a specific request, we deal with them one at a time
+                while (reader.hasNextLine()) { // each line of query2.txt is a specific request, we deal with them one at a time
                     String queryLine = reader.nextLine();
                     String[] arr = queryLine.split("\\s+");
                     List<String> list = Arrays.asList(arr);
