@@ -10,11 +10,35 @@ public class Bigram {
         this.w1 = w1;
     }
 
-    public ArrayList<MapEntry<String, Integer>> bigramOf(String w1) {
+    public String bigramOf(String w1){
+        ArrayList<MapEntry<String, Double>> possibleBigrams = coOccurrences(w1);
+        Double countW1 = possibleBigrams.removeLast().getValue();
+        //System.out.println(countW1);
+
+        for (MapEntry<String, Double> bigram : possibleBigrams){
+            bigram.setValue(bigram.getValue() / countW1);
+        }
+        //System.out.println(possibleBigrams.toString());
+
+        double bestProba = 0.0;
+        String bestBigram = "";
+        for (MapEntry<String, Double> bigram : possibleBigrams){
+            if (bigram.getValue() > bestProba){
+                bestProba = bigram.getValue();
+                bestBigram = bigram.getKey();
+            }
+        }
+        return bestBigram;
+
+
+
+    }
+
+    public ArrayList<MapEntry<String, Double>> coOccurrences(String w1) {
         ArrayList<MapEntry<String, ArrayList<Integer>>> w1Positions = new ArrayList<>();
-        ArrayList<MapEntry<String, Integer>> coOccurenceList = new ArrayList<>();
+        ArrayList<MapEntry<String, Double>> coOccurrenceList = new ArrayList<>();
         // C(w1) all the counts of w1 within all documents
-        int CW1 = 0;
+        double CW1 = 0.0;
         FileMap w1FileMap = wordMap.get(w1);
         for (Map.Entry<String, ArrayList<Integer>> entry : w1FileMap.entrySet2()) {
             String documentName = entry.getKey();
@@ -26,36 +50,26 @@ public class Bigram {
                 System.out.println("bigram pos = " + bigramPos + " in file = " + documentName);
                 String bigramWord = getWord1(documentName, bigramPos);
 
-                /*
-                for (Map.Entry<String, FileMap> entry2 : wordMap.entrySet2()) { // go through each word
-                    ArrayList<Integer> e3 = entry2.getValue().get(documentName);
-                    if (e3 != null && e3.contains(bigramPos)){
-                        for (Integer pos : e3){
-                            if (pos == bigramPos){System.out.println(entry2.getKey());};
-                        }
+                //MapEntry<String, Integer> mapEntry = new MapEntry<>(bigramWord, 1);
+                // Check if the bigram is already in coOccurrenceList
+                boolean found = false;
+                for (MapEntry<String, Double> coOccurrenceEntry : coOccurrenceList) {
+                    if (coOccurrenceEntry.getKey().equals(bigramWord)) {
+                        // If found, increment the count
+                        coOccurrenceEntry.setValue(coOccurrenceEntry.getValue() + 1);
+                        found = true;
+                        break;
                     }
-
-                    int CW = 0;
-                    MapEntry<String, Integer> mapEntry = new MapEntry(entry.getKey(), CW);
-                    for (Map.Entry<String, ArrayList<Integer>> e : entry2.getValue().entrySet2()) { // go through each fileMap
-                        if (entry.getKey() == e.getKey()) { // same document
-                            if (e.getValue().contains(bigramPos)) {
-                                mapEntry.setValue(CW++);
-                            }
-
-                        }
-                    }
-                    coOccurenceList.add(mapEntry);
+                }
+                // If not found, add a new entry
+                if (!found) {
+                    coOccurrenceList.add(new MapEntry<>(bigramWord, 1.0));
                 }
             }
             CW1 += entry.getValue().size();
         }
-        System.out.println(CW1);
-    }*/
-            }
-        }
-        return coOccurenceList;
-
+        coOccurrenceList.add(new MapEntry<>("W1 OCCURENCES", CW1));
+        return coOccurrenceList;
     }
     public String getWord1(String documentName, Integer bigramPos) {
         for (Map.Entry<String, FileMap> entry : wordMap.entrySet2()) {
@@ -81,18 +95,4 @@ public class Bigram {
         return null; // Return null if the word is not found
     }
 
-    public String getWord(String documentName, Integer bigramPos){
-        for (Map.Entry<String, FileMap> entry : wordMap.entrySet2()) { // go through each word
-            FileMap entryFileMap = entry.getValue();
-            if (entryFileMap.containsKey(documentName)){
-                ArrayList<Integer> entryIntList = entryFileMap.get(documentName);
-                System.out.println(entryIntList.toString());
-                if (entryIntList.contains(bigramPos)){
-                    System.out.println("TRUE : "+entry.getKey());
-                    return entry.getKey();
-                }
-            }
-        }
-        return "f";
-    }
 }

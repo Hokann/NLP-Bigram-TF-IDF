@@ -127,8 +127,8 @@ public class Main {
                         System.out.println(bigramQuery.toString());
                         Bigram bigram = new Bigram(bigramQuery.getLast(), wordMap);
 
-                        System.out.println(bigram.bigramOf("dwarf").toString());
-
+                        String mostProbableBigram = bigram.bigramOf("coffee");
+                        System.out.println(mostProbableBigram);
                     }
                 }
 
