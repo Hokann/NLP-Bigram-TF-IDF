@@ -3,7 +3,15 @@ import edu.stanford.nlp.ling.*;
 
 import java.util.*;
 
-//
+/**
+ * Implementation of java's Map interface. Use of the words (distinct words) as keys, and values are references to
+ * the words corresponding FileMap.
+ *
+ * As with FileMap, the methods implemented are based on ProbeHashMap seen in class
+ *
+ * @author Francois Major
+ * @author Hokan Gillot (20242295)
+ * */
 public class WordMap implements Map<String, FileMap> {
     private MapEntry<String, FileMap>[] table; // fixed array of entries, this will be our internal storage
     private MapEntry<String,FileMap> DEFUNCT = new MapEntry<>( null, null ); // sentinel
@@ -44,12 +52,13 @@ public class WordMap implements Map<String, FileMap> {
 
         MapEntry<String, FileMap> wordEntry = new MapEntry<>(word, fileMap);
         int j = findSlot( hashValue(word), word );
-        if( j >= 0 ){ // TODO : if the word already exists in a file, just return the existing fileMap
-            return fileMap; //table[j].setValue( file ); // associate word to new file
+        if( j >= 0 ){
+            return fileMap;
         }
         table[-(j+1)] = wordEntry; // convert to proper index
         this.n++;
 
+        // Manual load management
         double loadFactor = (double) n / capacity;
         if (loadFactor > MAX_LOAD){
             resize(2 * capacity + 1);
@@ -80,6 +89,15 @@ public class WordMap implements Map<String, FileMap> {
         if( j < 0 ) return null; // no match found
         return table[j].getValue();
     }
+
+    // return an iterable collection of all key-value entries of the map
+    public Iterable<Entry<String,FileMap>> entrySet2() {
+        ArrayList<Entry<String,FileMap>> buffer = new ArrayList<>();
+        for( int h = 0; h < this.capacity; h++ )
+            if( !isAvailable( h ) ) buffer.add( table[h] );
+        return buffer;
+    }
+
     @Override
     public int size() { return n; }
     @Override
@@ -126,12 +144,5 @@ public class WordMap implements Map<String, FileMap> {
         return set;
     }
 
-// return an iterable collection of all key-value entries of the map
-public Iterable<Entry<String,FileMap>> entrySet2() {
-    ArrayList<Entry<String,FileMap>> buffer = new ArrayList<>();
-    for( int h = 0; h < this.capacity; h++ )
-        if( !isAvailable( h ) ) buffer.add( table[h] );
-    return buffer;
-}
 
 }

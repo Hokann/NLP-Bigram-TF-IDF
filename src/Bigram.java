@@ -1,24 +1,31 @@
 import java.io.*;
 import java.util.*;
 
+/**
+ * Bigram is an NLP operation which takes a word, and finds the most probable following word. (used in autocomplete for example)
+ * We define 3 methods to allow us to determine the bigram of a word (w1)
+ *
+ * @author Hokan Gillot (20242295)
+ * */
 public class Bigram {
     private WordMap wordMap;
-    private String w1;
-
-    public Bigram(String w1, WordMap wordMap) {
+    public Bigram(WordMap wordMap) {
         this.wordMap = wordMap;
-        this.w1 = w1;
     }
 
+    // Main method which will compute probability of obsering w1 for all possible bigrams, then choosing the bigram
+    // with the highest probability
     public String bigramOf(String w1){
         ArrayList<MapEntry<String, Double>> possibleBigrams = coOccurrences(w1); // list of possible bigrams
-        Double countW1 = possibleBigrams.removeLast().getValue(); // C(W1)
+        Double countW1 = possibleBigrams.removeLast().getValue(); // total count of w1 in the dataset
 
         for (MapEntry<String, Double> bigram : possibleBigrams){
-            bigram.setValue(bigram.getValue() / countW1); // calculate probability of observing w1
+            bigram.setValue(bigram.getValue() / countW1); // calculate probability of observing w1 for each bigram
         }
 
-        double bestProba = 0.0; String bestBigram = "";
+        // Find the bigram with the highest probability, if we find 2 bigrams with the highest probability, we take
+        // the smallest in lexicographic order
+        double bestProba = 0.0; String bestBigram = ""; // init
         for (MapEntry<String, Double> bigram : possibleBigrams){
             if (bigram.getValue() > bestProba){
                 bestProba = bigram.getValue();
@@ -34,6 +41,7 @@ public class Bigram {
 
     public ArrayList<MapEntry<String, Double>> coOccurrences(String w1) {
         ArrayList<MapEntry<String, ArrayList<Integer>>> w1Positions = new ArrayList<>();
+        // list to keep track of bigrams and the number co-occurrences (occurences of w1 followed by the bigram)
         ArrayList<MapEntry<String, Double>> coOccurrenceList = new ArrayList<>();
         // C(w1), all the counts of w1 within all documents
         double CW1 = 0.0;
@@ -43,51 +51,49 @@ public class Bigram {
             ArrayList<Integer> documentPositions = entry.getValue();
             w1Positions.add(new MapEntry<>(documentName, documentPositions));
 
-            for (Integer position : documentPositions) { // position of each w1
-                Integer bigramPos = position + 1;
-                //System.out.println("bigram pos = " + bigramPos + " in file = " + documentName);
-                String bigramWord = getWord1(documentName, bigramPos);
+            for (Integer position : documentPositions) { // iterate through each position of w1
+                Integer bigramPos = position + 1; // the bigrams position is just +1
+
+                String bigramWord = getWord(documentName, bigramPos); // find the corresponding word
                 if (bigramWord == null) {  break; }
-                //MapEntry<String, Integer> mapEntry = new MapEntry<>(bigramWord, 1);
                 // Check if the bigram is already in coOccurrenceList
                 boolean found = false;
                 for (MapEntry<String, Double> coOccurrenceEntry : coOccurrenceList) {
                     if (coOccurrenceEntry.getKey().equals(bigramWord) && bigramWord != null) {
-                        // If found, increment the count
+                        // If so, increment the count
                         coOccurrenceEntry.setValue(coOccurrenceEntry.getValue() + 1);
                         found = true;
                         break;
                     }
                 }
-                // If not found, add a new entry
+                // If not, new entry, and we mark its 1st occurence
                 if (!found) {
-                    coOccurrenceList.add(new MapEntry<>(bigramWord, 1.0));
+                    coOccurrenceList.add(new MapEntry<>(bigramWord, 1.0)); // Using double makes it easier to calculate probailities later on
                 }
             }
             CW1 += entry.getValue().size();
         }
+        // we include the total count of w1 at the end, just so we have access to it later on
         coOccurrenceList.add(new MapEntry<>("W1 OCCURENCES", CW1));
         return coOccurrenceList;
     }
-    public String getWord1(String documentName, Integer bigramPos) {
-        for (Map.Entry<String, FileMap> entry : wordMap.entrySet2()) {
+
+    // Find a word if given only its position within a document
+    public String getWord(String documentName, Integer bigramPos) {
+        for (Map.Entry<String, FileMap> entry : wordMap.entrySet2()) { // iterate through all words
             FileMap entryFileMap = entry.getValue();
-            if (entryFileMap.containsKey(documentName)) {
+            if (entryFileMap.containsKey(documentName)) { // we find the word which is in the document
                 ArrayList<Integer> entryIntList = entryFileMap.get(documentName);
 
-                // Check if bigramPos is within the range of positions
-               // if (!entryIntList.isEmpty() && bigramPos >= entryIntList.get(0) && bigramPos <= entryIntList.get(entryIntList.size() - 1)) {
-                    // Iterate through positions to find the word at the specified position
+                    // Within that document, iterate through the position to try to find the bigramPos
                     for (int i = 0; i < entryIntList.size(); i++) {
                         if (entryIntList.get(i).equals(bigramPos)) {
-                            //System.out.println("TRUE : " + entry.getKey());
                             return entry.getKey();
                         } else if (entryIntList.get(i) > bigramPos) {
-                            // If the current position is greater than bigramPos, break the loop
+                            // if current position greater than bigramPos, break
                             break;
                         }
                     }
-                //}
             }
         }
         return null; // Return null if the word is not found

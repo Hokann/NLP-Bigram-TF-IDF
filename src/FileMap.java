@@ -1,5 +1,18 @@
 import java.util.*;
 
+/**
+ * Implementation of java's Map interface to store key-value pairs of :
+ *  1) the document a word is found in (key)
+ *  2) all positions of that word in the document (value)
+ *
+ * We base ourselves off of ProbeHashMap seen in class.
+ * We use its custom hashValue, and its method to find the next open slot (linear probing)
+ *
+ * We do not implement all methods of Map, we either don't need them, or define them in another way (e.g. entrySet2())
+ *
+ * @author Francois Major
+ * @author Hokan Gillot (20242295)
+ * */
 public class FileMap implements Map<String, ArrayList<Integer>> {
 
     private int capacity;
@@ -15,7 +28,7 @@ public class FileMap implements Map<String, ArrayList<Integer>> {
 
 
     public FileMap(){
-        this.capacity = 16;
+        this.capacity = 16; // default capacity
         this.n = 0;
         this.table = new MapEntry[this.capacity];
     }
@@ -35,6 +48,7 @@ public class FileMap implements Map<String, ArrayList<Integer>> {
         this.n++;
 
         double loadFactor = (double) n / capacity;
+        // Manual load management
         if (loadFactor > MAX_LOAD){
             resize(2 * capacity + 1);
         }
@@ -70,65 +84,12 @@ public class FileMap implements Map<String, ArrayList<Integer>> {
         return -(avail + 1); // search has failed
     }
 
-
-    @Override
-    public int size() {
-        return n;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public boolean containsKey(Object key) {
-        return get( key ) != null;
-    }
-
-    @Override
-    public boolean containsValue(Object value) {
-        return false;
-    }
-
     @Override
     public ArrayList<Integer> get(Object key) {
         String filename = key.toString();
         int j = findSlot( hashValue(filename), filename );
         if( j < 0 ) return null; // no match found
         return table[j].getValue();
-    }
-
-
-
-    @Override
-    public ArrayList<Integer> remove(Object key) {
-        return null;
-    }
-
-    @Override
-    public void putAll(Map<? extends String, ? extends ArrayList<Integer>> m) {
-
-    }
-
-    @Override
-    public void clear() {
-
-    }
-
-    @Override
-    public Set<String> keySet() {
-        return null;
-    }
-
-    @Override
-    public Collection<ArrayList<Integer>> values() {
-        return null;
-    }
-
-    @Override
-    public Set<Entry<String, ArrayList<Integer>>> entrySet() {
-        return null;
     }
 
     public Iterable<Entry<String,ArrayList<Integer>>> entrySet2() {
@@ -138,5 +99,42 @@ public class FileMap implements Map<String, ArrayList<Integer>> {
         return buffer;
     }
 
-
+    @Override
+    public int size() {
+        return n;
+    }
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+    @Override
+    public boolean containsKey(Object key) {
+        return get( key ) != null;
+    }
+    @Override
+    public boolean containsValue(Object value) {
+        return false;
+    }
+    @Override
+    public ArrayList<Integer> remove(Object key) {
+        return null;
+    }
+    @Override
+    public void putAll(Map<? extends String, ? extends ArrayList<Integer>> m) {
+    }
+    @Override
+    public void clear() {
+    }
+    @Override
+    public Set<String> keySet() {
+        return null;
+    }
+    @Override
+    public Collection<ArrayList<Integer>> values() {
+        return null;
+    }
+    @Override
+    public Set<Entry<String, ArrayList<Integer>>> entrySet() {
+        return null;
+    }
 }
