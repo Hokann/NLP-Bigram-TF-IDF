@@ -11,21 +11,22 @@ public class Bigram {
     }
 
     public String bigramOf(String w1){
-        ArrayList<MapEntry<String, Double>> possibleBigrams = coOccurrences(w1);
-        Double countW1 = possibleBigrams.removeLast().getValue();
-        //System.out.println(countW1);
+        ArrayList<MapEntry<String, Double>> possibleBigrams = coOccurrences(w1); // list of possible bigrams
+        Double countW1 = possibleBigrams.removeLast().getValue(); // C(W1)
 
         for (MapEntry<String, Double> bigram : possibleBigrams){
-            bigram.setValue(bigram.getValue() / countW1);
+            bigram.setValue(bigram.getValue() / countW1); // calculate probability of observing w1
         }
-        //System.out.println(possibleBigrams.toString());
 
-        double bestProba = 0.0;
-        String bestBigram = "";
+        double bestProba = 0.0; String bestBigram = "";
         for (MapEntry<String, Double> bigram : possibleBigrams){
             if (bigram.getValue() > bestProba){
                 bestProba = bigram.getValue();
                 bestBigram = bigram.getKey();
+            }else if (bigram.getValue() == bestProba){
+                if (bigram.getKey().compareTo(bestBigram) < 0 ){ // compare lexicographic order if same value
+                    bestBigram = bigram.getKey();
+                }
             }
         }
         return bestBigram;
@@ -49,12 +50,12 @@ public class Bigram {
                 Integer bigramPos = position + 1;
                 //System.out.println("bigram pos = " + bigramPos + " in file = " + documentName);
                 String bigramWord = getWord1(documentName, bigramPos);
-
+                if (bigramWord == null) { System.out.println("FF"); break; }
                 //MapEntry<String, Integer> mapEntry = new MapEntry<>(bigramWord, 1);
                 // Check if the bigram is already in coOccurrenceList
                 boolean found = false;
                 for (MapEntry<String, Double> coOccurrenceEntry : coOccurrenceList) {
-                    if (coOccurrenceEntry.getKey().equals(bigramWord)) {
+                    if (coOccurrenceEntry.getKey().equals(bigramWord) && bigramWord != null) {
                         // If found, increment the count
                         coOccurrenceEntry.setValue(coOccurrenceEntry.getValue() + 1);
                         found = true;
@@ -92,6 +93,7 @@ public class Bigram {
                 }
             }
         }
+        System.out.println("F");
         return null; // Return null if the word is not found
     }
 

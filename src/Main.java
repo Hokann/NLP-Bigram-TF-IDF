@@ -13,7 +13,7 @@ public class Main {
 
             ArrayList<MapEntry<String, Integer>> totalWords = new ArrayList<>();
 
-            File folder = new File("src/dataset");
+            File folder = new File("src/dataset2");
             File[] listOfFiles = folder.listFiles();
             // sort files in alphabetical order to ensure later on that totalWords matches with the correct file
             // e.g. totalWords.get(0) == firstfileWords.length (first => alphabetically comes first)
@@ -22,7 +22,7 @@ public class Main {
             {
                 if(file.isFile())
                 {
-                    BufferedReader br=new BufferedReader(new FileReader(new File("src/dataset"+"/"+file.getName())));
+                    BufferedReader br=new BufferedReader(new FileReader(new File("src/dataset2"+"/"+file.getName())));
                     StringBuffer word=new StringBuffer();
                     String line;
                     while((line=br.readLine())!=null)
@@ -70,23 +70,9 @@ public class Main {
                     }
                 }
             }
-            System.out.println(totalWords.toString());
-            System.out.println("-----------------------------------");
-            //Printing out all entries of the wordmap (and for each word its corresponding filemap)
-            for (Map.Entry entry: wordMap.entrySet2()) {
-                String word = (String) entry.getKey();
-                System.out.println(word+" : ");
-                FileMap wordFileMap = (FileMap) entry.getValue();
-                for (Map.Entry entry2: wordFileMap.entrySet2()){
-                    String filename = (String) entry2.getKey();
-                    ArrayList<Integer> positions = (ArrayList<Integer>) entry2.getValue();
-                    System.out.println(" - "+filename + " : "+positions.toString());
-                }
-            }
-            System.out.println("-----------------------------------");
 
             try {
-                File queryFile = new File("src/query.txt");
+                File queryFile = new File("src/query2.txt");
                 Scanner reader = new Scanner(queryFile);
 
                 File outputFile = new File("src/solutions.txt");
@@ -123,8 +109,6 @@ public class Main {
 
 
 
-
-
                         // TYPE 1 QUERY : Finding most probable Bigram of word
                     }else{
                         String bigramoOf = queryWordsList.getLast();
@@ -134,9 +118,9 @@ public class Main {
                         //System.out.println(bigramQuery.toString());
                         String word = bigramQuery.getLast();
                         Bigram bigram = new Bigram(word, wordMap);
-
+                        System.out.println(word);
                         String mostProbableBigram = bigram.bigramOf(word);
-                        System.out.println(mostProbableBigram);
+                        System.out.println(word + " " + mostProbableBigram);
                         writer.write(word + " " + mostProbableBigram+"\n");
 
                     }
@@ -167,3 +151,20 @@ public class Main {
         return correctedQuery;
     }
 }
+
+
+            /*
+            System.out.println(totalWords.toString());
+            System.out.println("-----------------------------------");
+            //Printing out all entries of the wordmap (and for each word its corresponding filemap)
+            for (Map.Entry entry: wordMap.entrySet2()) {
+                String word = (String) entry.getKey();
+                System.out.println(word+" : ");
+                FileMap wordFileMap = (FileMap) entry.getValue();
+                for (Map.Entry entry2: wordFileMap.entrySet2()){
+                    String filename = (String) entry2.getKey();
+                    ArrayList<Integer> positions = (ArrayList<Integer>) entry2.getValue();
+                    System.out.println(" - "+filename + " : "+positions.toString());
+                }
+            }
+            System.out.println("-----------------------------------");*/
