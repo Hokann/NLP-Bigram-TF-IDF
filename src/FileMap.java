@@ -83,7 +83,7 @@ public class FileMap implements Map<String, ArrayList<Integer>> {
 
     @Override
     public boolean containsKey(Object key) {
-        return false;
+        return get( key ) != null;
     }
 
     @Override
@@ -93,7 +93,10 @@ public class FileMap implements Map<String, ArrayList<Integer>> {
 
     @Override
     public ArrayList<Integer> get(Object key) {
-        return null;
+        String filename = key.toString();
+        int j = findSlot( hashValue(filename), filename );
+        if( j < 0 ) return null; // no match found
+        return table[j].getValue();
     }
 
 

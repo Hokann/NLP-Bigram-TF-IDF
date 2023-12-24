@@ -98,12 +98,23 @@ public class Main {
                     // TYPE 2 QUERY : Retrieving most relevant document
                     if (arr[0].equals("search")){
                         queryWordsList.removeFirst();
-                        System.out.println(queryWordsList+" TF-IDT");
+                        //System.out.println(queryWordsList+" TF-IDT");
                         ArrayList<String> searchQuery = correctQuery(queryWordsList, wordMap);
-                        System.out.println("search" + searchQuery.toString());
+                        //System.out.println("search" + searchQuery.toString());
 
-                        Search search = new Search(searchQuery, wordMap, totalWords);
-                        System.out.println(search.TFIDF());
+                        Search TFIDFQuery = new Search(searchQuery, wordMap, totalWords);
+                        ArrayList<Double> searchResults = TFIDFQuery.TFIDF();
+                        //System.out.println(searchResults);
+                        Double highestTFIDF = 0.0;
+                        for (Double value : searchResults){
+                            if (value > highestTFIDF){
+                                highestTFIDF = value;
+                            }
+                        }
+                        MapEntry<String, Integer> documentEntry = totalWords.get(searchResults.indexOf(highestTFIDF));
+                        String mostRelevantDocument = documentEntry.getKey();
+                        System.out.println(mostRelevantDocument);
+
 
 
 
@@ -114,6 +125,10 @@ public class Main {
                         System.out.println(queryWordsList+" Bigram");
                         ArrayList<String> bigramQuery = correctQuery(queryWordsList, wordMap);
                         System.out.println(bigramQuery.toString());
+                        Bigram bigram = new Bigram(bigramQuery.getLast(), wordMap);
+
+                        System.out.println(bigram.bigramOf("dwarf").toString());
+
                     }
                 }
 

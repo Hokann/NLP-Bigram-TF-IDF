@@ -17,7 +17,7 @@ public class Search {
     public ArrayList<Double> TFIDF(){
         ArrayList<Double> result = new ArrayList<>();
         for (String word : words){
-            System.out.println(word);
+            //System.out.println(word);
             ArrayList<Double> tfValues = TF(word);
             double idfValue = IDF(word);
 
@@ -25,8 +25,8 @@ public class Search {
             for (Double tfValue : tfValues){
                 tfidf.add(tfValue * idfValue);
             }
-            System.out.println(tfidf.toString());
-            System.out.println(tfidf.size());
+            //System.out.println(tfidf.toString());
+            //System.out.println(tfidf.size());
 
             for (int i = 0; i < tfidf.size(); i++) {
                 if (result.size() <= i) {
@@ -40,7 +40,7 @@ public class Search {
             }
 
         }
-        System.out.println(result.toString());
+        //System.out.println(result.toString());
         return result;
     }
 
