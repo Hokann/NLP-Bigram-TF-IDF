@@ -100,12 +100,10 @@ public class Main {
                         queryWordsList.removeFirst();
                         System.out.println(queryWordsList+" TF-IDT");
                         ArrayList<String> searchQuery = correctQuery(queryWordsList, wordMap);
-                        System.out.println(searchQuery.toString());
+                        System.out.println("search" + searchQuery.toString());
 
-                        TFIDF search = new TFIDF(searchQuery, wordMap, totalWords);
-                        System.out.println(search.TF("planet").toString());
-                        System.out.println(search.IDF("planet"));
-
+                        Search search = new Search(searchQuery, wordMap, totalWords);
+                        System.out.println(search.TFIDF());
 
 
 
